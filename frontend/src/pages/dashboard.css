@@ -1,0 +1,306 @@
+/* Dashboard layout (matches your dark glass UI) */
+
+.dbPage{
+  max-width:1100px;
+  margin:0 auto;
+  padding:24px;
+}
+
+.dbHeader{
+  margin-bottom:18px;
+}
+
+.dbTitle{
+  margin:0;
+  font-size:34px;
+  font-weight:800;
+  color:#fff;
+  letter-spacing:.3px;
+}
+
+.dbSubtitle{
+  margin:8px 0 0;
+  color:rgba(255,255,255,.65);
+  font-size:14px;
+}
+
+.dbAlert{
+  margin-top:14px;
+  padding:12px 14px;
+  border-radius:14px;
+  font-size:13px;
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.85);
+}
+
+.dbAlertError{
+  border-color: rgba(255, 80, 80, .35);
+  background: rgba(255, 80, 80, .10);
+  color: rgba(255, 210, 210, .95);
+}
+
+/* Cards */
+.dbCards{
+  display:grid;
+  grid-template-columns:repeat(4, minmax(0, 1fr));
+  gap:14px;
+  margin-top:14px;
+}
+
+@media (max-width: 980px){
+  .dbCards{ grid-template-columns:repeat(2, minmax(0, 1fr)); }
+}
+
+.dbCard{
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(8, 12, 24, .55);
+  box-shadow: 0 10px 40px rgba(0,0,0,.25);
+  border-radius:18px;
+  padding:16px;
+  backdrop-filter: blur(10px);
+}
+
+.dbCardTitle{
+  color:rgba(255,255,255,.62);
+  font-size:12px;
+  margin-bottom:10px;
+}
+
+.dbCardValue{
+  color:#fff;
+  font-size:32px;
+  font-weight:800;
+}
+
+/* Panels */
+.dbGrid2{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:14px;
+  margin-top:14px;
+}
+
+@media (max-width: 980px){
+  .dbGrid2{ grid-template-columns:1fr; }
+}
+
+.dbPanel{
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(8, 12, 24, .55);
+  box-shadow: 0 10px 40px rgba(0,0,0,.25);
+  border-radius:18px;
+  padding:16px;
+  backdrop-filter: blur(10px);
+}
+
+.dbPanelHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:12px;
+}
+
+.dbPanelTitle{
+  font-size:16px;
+  font-weight:800;
+  color:#fff;
+}
+
+.dbPanelHint{
+  font-size:12px;
+  color:rgba(255,255,255,.62);
+}
+
+/* Bars */
+.dbBar{
+  height:12px;
+  width:100%;
+  border-radius:999px;
+  background: rgba(255,255,255,.10);
+  overflow:hidden;
+}
+
+.dbBarFill{
+  height:100%;
+  border-radius:999px;
+  background: linear-gradient(90deg, #22c55e, #3b82f6);
+  transition: width .25s ease;
+}
+
+/* Pills */
+.dbPills{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:12px;
+}
+
+.dbPill{
+  font-size:12px;
+  color: rgba(255,255,255,.78);
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.06);
+  padding:6px 10px;
+  border-radius:999px;
+}
+
+.dbPill b{ color:#fff; }
+
+/* Subject list */
+.dbSubjectList{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.dbSubjectItem{
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.06);
+  border-radius:14px;
+  padding:12px;
+}
+
+.dbSubjectTop{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.dbSubjectName{
+  font-weight:800;
+  color:#fff;
+}
+
+.dbSubjectStat{
+  font-size:12px;
+  color: rgba(255,255,255,.72);
+}
+
+/* Today tasks */
+.dbTodayGrid{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap:12px;
+  margin-top:10px;
+}
+
+@media (max-width: 980px){
+  .dbTodayGrid{ grid-template-columns:1fr; }
+}
+
+.dbTaskCard{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.06);
+  border-radius:14px;
+  padding:12px;
+}
+
+.dbTaskLeft{
+  min-width:0;
+}
+
+.dbTaskTitle{
+  font-weight:800;
+  color:#fff;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width: 420px;
+}
+
+.dbTaskTitle.isDone{
+  color: rgba(255,255,255,.55);
+  text-decoration: line-through;
+}
+
+.dbTaskMeta{
+  margin-top:6px;
+  font-size:12px;
+  color: rgba(255,255,255,.70);
+}
+
+.dbStatus{
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:800;
+  border:1px solid rgba(255,255,255,.10);
+  white-space:nowrap;
+}
+
+.dbStatus.done{
+  background: rgba(34,197,94,.14);
+  color: rgba(187,255,220,.95);
+  border-color: rgba(34,197,94,.25);
+}
+
+.dbStatus.pending{
+  background: rgba(245,158,11,.14);
+  color: rgba(255,235,190,.95);
+  border-color: rgba(245,158,11,.25);
+}
+
+.dbEmpty{
+  margin-top:10px;
+  border:1px dashed rgba(255,255,255,.14);
+  background: rgba(255,255,255,.05);
+  border-radius:14px;
+  padding:16px;
+  color: rgba(255,255,255,.75);
+}
+
+/* ✅ NEW: Weekly Completed Tasks Graph */
+.weeklyGraph{
+  margin-top: 12px;
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap: 10px;
+  height: 220px;
+}
+
+.weeklyBarWrap{
+  width: 52px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap: 8px;
+}
+
+.weeklyCount{
+  font-size: 12px;
+  font-weight: 800;
+  color: rgba(255,255,255,.9);
+}
+
+.weeklyBarBg{
+  width: 100%;
+  height: 160px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.06);
+  display:flex;
+  align-items:flex-end;
+  overflow:hidden;
+}
+
+.weeklyBar{
+  width: 100%;
+  height: 0%;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #22c55e, #3b82f6);
+  transition: height .35s ease;
+}
+
+.weeklyLabel{
+  font-size: 12px;
+  color: rgba(255,255,255,.65);
+}

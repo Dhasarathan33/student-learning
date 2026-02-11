@@ -1,0 +1,102 @@
+/* ===== Subjects Page Enhancements ===== */
+
+.btnDanger {
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btnDanger:hover {
+  background: #dc2626;
+}
+
+.listItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: #1e293b;
+  margin-bottom: 12px;
+}
+
+.listTitle {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.textInput {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: white;
+}
+
+.textInput:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.alertSuccess {
+  background: #064e3b;
+  color: #10b981;
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin-bottom: 14px;
+}
+
+.alertError {
+  background: #450a0a;
+  color: #f87171;
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin-bottom: 14px;
+}
+/* keep actions aligned */
+.subjectActions{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+.subjectActions button{
+  min-width: 88px;
+  height: 38px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+.editInput{
+  width:100%;
+  padding:12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.04);
+  color: #fff;
+}
+.editInput:focus{
+  outline:none;
+  border-color: rgba(59,130,246,0.7);
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+}
+.listItem{
+  transition: 0.2s ease;
+}
+.listItem:hover{
+  transform: translateY(-2px);
+  border-color: rgba(255,255,255,0.18);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+}
+.badgeWarn{
+  background: rgba(245,158,11,0.18);
+  border: 1px solid rgba(245,158,11,0.35);
+  color: #fbbf24;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 999px;
+  text-transform: lowercase;
+}
