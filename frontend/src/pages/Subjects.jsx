@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import api from "../api/axios";
 import Layout from "../components/Layout";
 
@@ -10,6 +10,10 @@ export default function Subjects() {
   const [editId, setEditId] = useState(null);
   const [editName, setEditName] = useState("");
   const [msg, setMsg] = useState("");
+
+  // ✅ NEW: search + delete confirm (inline)
+  const [search, setSearch] = useState("");
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
   const load = async () => {
     const res = await api.get("/api/subjects");
@@ -32,6 +36,7 @@ export default function Subjects() {
   // ✅ NEW: start edit
   const startEdit = (s) => {
     setMsg("");
+    setConfirmDeleteId(null); // ✅ NEW: close delete confirm if open
     setEditId(s.id);
     setEditName(s.name);
   };
@@ -55,12 +60,18 @@ export default function Subjects() {
   // ✅ NEW: delete (DELETE /api/subjects/:id)
   const remove = async (id) => {
     setMsg("");
-    const ok = window.confirm("Delete this subject?");
-    if (!ok) return;
     await api.delete(`/api/subjects/${id}`);
     setMsg("Subject deleted");
+    setConfirmDeleteId(null); // ✅ NEW
     load();
   };
+
+  // ✅ NEW: filter subjects by search
+  const filteredSubjects = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return subjects;
+    return subjects.filter((s) => String(s.name || "").toLowerCase().includes(q));
+  }, [subjects, search]);
 
   return (
     <Layout>
@@ -90,19 +101,35 @@ export default function Subjects() {
               onChange={(e) => setName(e.target.value)}
               placeholder="Add subject (eg: Math)"
               className="textInput"
+              // ✅ NEW: Enter key adds
+              onKeyDown={(e) => {
+                if (e.key === "Enter") add();
+              }}
             />
             <button onClick={add} className="btnPrimary">
               Add
             </button>
           </div>
+
+          {/* ✅ NEW: Search bar (no new CSS required) */}
+          <div style={{ marginTop: 12 }}>
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search subjects..."
+              className="textInput"
+              style={{ width: "100%" }}
+            />
+          </div>
         </div>
 
         <div className="list">
-          {subjects.map((s) => {
+          {filteredSubjects.map((s) => {
             const status = (s.status || "active").toLowerCase();
             const statusClass = status === "recovery" ? "badgeWarn" : "badgeSuccess";
 
             const isEditing = editId === s.id;
+            const isConfirmingDelete = confirmDeleteId === s.id;
 
             return (
               <div key={s.id} className="listItem">
@@ -117,6 +144,11 @@ export default function Subjects() {
                       className="textInput"
                       placeholder="Edit subject name"
                       style={{ width: "100%" }}
+                      // ✅ NEW: Enter to save, Esc to cancel
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") saveEdit();
+                        if (e.key === "Escape") cancelEdit();
+                      }}
                     />
                   )}
                 </div>
@@ -128,21 +160,47 @@ export default function Subjects() {
                 <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
                   {!isEditing ? (
                     <>
-                      <button
-                        className="btnPrimary"
-                        style={{ padding: "8px 12px" }}
-                        onClick={() => startEdit(s)}
-                      >
-                        Edit
-                      </button>
+                      {!isConfirmingDelete ? (
+                        <>
+                          <button
+                            className="btnPrimary"
+                            style={{ padding: "8px 12px" }}
+                            onClick={() => startEdit(s)}
+                          >
+                            Edit
+                          </button>
 
-                      <button
-                        className="btnDanger"
-                        style={{ padding: "8px 12px" }}
-                        onClick={() => remove(s.id)}
-                      >
-                        Delete
-                      </button>
+                          {/* ✅ NEW: inline delete confirm (replaces window.confirm UI) */}
+                          <button
+                            className="btnDanger"
+                            style={{ padding: "8px 12px" }}
+                            onClick={() => {
+                              setMsg("");
+                              setConfirmDeleteId(s.id);
+                            }}
+                          >
+                            Delete
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            className="btnDanger"
+                            style={{ padding: "8px 12px" }}
+                            onClick={() => remove(s.id)}
+                          >
+                            Confirm
+                          </button>
+
+                          <button
+                            className="btnPrimary"
+                            style={{ padding: "8px 12px" }}
+                            onClick={() => setConfirmDeleteId(null)}
+                          >
+                            Cancel
+                          </button>
+                        </>
+                      )}
                     </>
                   ) : (
                     <>
@@ -168,8 +226,10 @@ export default function Subjects() {
             );
           })}
 
-          {subjects.length === 0 && (
-            <div className="emptyState">No subjects added yet.</div>
+          {filteredSubjects.length === 0 && (
+            <div className="emptyState">
+              {subjects.length === 0 ? "No subjects added yet." : "No matching subjects."}
+            </div>
           )}
         </div>
       </div>
