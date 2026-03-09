@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { createRequire } from "module";
 
+
 import authRoutes from "./routes/authRoutes.js";
 import { requireAuth } from "./middleware/authMiddleware.js";
 import openapiSpec from "./docs/openapi.js";
@@ -24,6 +25,17 @@ const require = createRequire(import.meta.url);
 const app = express();
 const swaggerUi = process.env.NODE_ENV === "test" ? null : require("swagger-ui-express");
 
+
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://student-learning-recovery-planner.vercel.app"
+    ],
+    credentials: true,
+  })
+);
+
 /* -------------------- middleware -------------------- */
 app.use(express.json());
 
@@ -35,12 +47,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(
-  cors({
-    origin: process.env.CORS_ORIGIN || "http://localhost:5173",
-    credentials: true,
-  })
-);
 
 app.use((req, res, next) => {
   req.requestId = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
