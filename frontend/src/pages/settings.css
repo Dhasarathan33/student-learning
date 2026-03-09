@@ -1,0 +1,132 @@
+.stPage {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.stHeader {
+  margin-bottom: 14px;
+}
+
+.stTitle {
+  margin: 0;
+  font-size: 38px;
+  font-weight: 900;
+  color: #fff;
+}
+
+.stSubtitle {
+  margin: 8px 0 0;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.stGrid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 16px;
+}
+
+.stMain {
+  display: grid;
+  gap: 14px;
+}
+
+.stPanel {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(8, 12, 24, 0.58);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.stPanel h2,
+.stPanel h3 {
+  margin: 0 0 12px;
+  color: #fff;
+}
+
+.stPanel p {
+  margin: 0 0 12px;
+  color: rgba(255, 255, 255, 0.74);
+}
+
+.stRow {
+  margin-bottom: 12px;
+}
+
+.stRow label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.stInput {
+  width: 100%;
+  padding: 11px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.stBtn {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: linear-gradient(90deg, rgba(34, 197, 94, 0.3), rgba(59, 130, 246, 0.3));
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.stBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.stDanger {
+  background: rgba(239, 68, 68, 0.22);
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.stToggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0 12px;
+  color: rgba(255, 255, 255, 0.86);
+  font-weight: 700;
+}
+
+.stAlert {
+  margin-bottom: 12px;
+  padding: 11px 13px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  font-weight: 800;
+}
+
+.stOk {
+  border-color: rgba(34, 197, 94, 0.35);
+  background: rgba(34, 197, 94, 0.14);
+}
+
+.stErr {
+  border-color: rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.14);
+}
+
+.stSticky {
+  position: sticky;
+  top: 90px;
+}
+
+@media (max-width: 980px) {
+  .stGrid {
+    grid-template-columns: 1fr;
+  }
+  .stSticky {
+    position: static;
+  }
+}

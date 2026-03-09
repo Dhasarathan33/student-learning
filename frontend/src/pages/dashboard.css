@@ -216,9 +216,10 @@
   max-width: 420px;
 }
 
+/* ✅ remove strike-out */
 .dbTaskTitle.isDone{
   color: rgba(255,255,255,.55);
-  text-decoration: line-through;
+  text-decoration: none;
 }
 
 .dbTaskMeta{
@@ -257,7 +258,7 @@
   color: rgba(255,255,255,.75);
 }
 
-/* ✅ NEW: Weekly Completed Tasks Graph */
+/* ✅ Weekly Completed Tasks Graph */
 .weeklyGraph{
   margin-top: 12px;
   display:flex;
@@ -303,4 +304,225 @@
 .weeklyLabel{
   font-size: 12px;
   color: rgba(255,255,255,.65);
+}
+
+/* =========================================================
+   ✅ NEW: ANALYTICS CENTER (Pie + Line + Score + Badge)
+   ========================================================= */
+
+.anaGrid{
+  margin-top: 14px;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 980px){
+  .anaGrid{
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Pie Chart */
+.anaPieWrap{
+  display:flex;
+  gap:16px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+.anaPie{
+  display:block;
+}
+
+.anaPieTrack,
+.anaPieWeak,
+.anaPieAvg,
+.anaPieGood{
+  fill: none;
+  stroke-width: 12;
+  stroke-linecap: round;
+}
+
+.anaPieTrack{ stroke: rgba(255,255,255,0.08); }
+.anaPieWeak{ stroke: rgba(239,68,68,0.92); }
+.anaPieAvg{  stroke: rgba(245,158,11,0.92); }
+.anaPieGood{ stroke: rgba(16,185,129,0.92); }
+
+.anaPieCenter{
+  fill: rgba(255,255,255,0.95);
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.anaPieCenterSub{
+  fill: rgba(148,163,184,0.9);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.anaLegend{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  font-size: 13px;
+  color: rgba(226,232,240,0.9);
+}
+
+.anaLegendRow{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+
+.dot{
+  width:10px;
+  height:10px;
+  border-radius:999px;
+  display:inline-block;
+}
+
+.dot.weak{ background: rgba(239,68,68,0.92); }
+.dot.avg{  background: rgba(245,158,11,0.92); }
+.dot.good{ background: rgba(16,185,129,0.92); }
+
+/* Line Chart */
+.anaLineWrap{
+  width: 100%;
+}
+
+.anaLine{
+  width: 100%;
+  height: 160px;
+  display: block;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+/* ✅ FIXED: your JSX uses className="anaGrid" on <line> */
+.anaGridLine{
+  stroke: rgba(255,255,255,0.08);
+  stroke-width: 1;
+}
+
+.anaLinePath{
+  fill: none;
+  stroke: rgba(59,130,246,0.9);
+  stroke-width: 3;
+}
+
+.anaDot{
+  fill: rgba(16,185,129,0.95);
+  stroke: rgba(0,0,0,0.2);
+  stroke-width: 1;
+}
+
+.anaLineLabels{
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.anaLineLabel{
+  text-align:center;
+  padding: 8px 6px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.04);
+}
+
+.anaLineDay{
+  font-size: 12px;
+  color: rgba(148,163,184,0.95);
+}
+
+.anaLinePct{
+  margin-top: 2px;
+  font-size: 14px;
+  font-weight: 900;
+  color: rgba(255,255,255,0.92);
+}
+
+/* Score + Badge */
+.anaScore{
+  font-size: 24px;
+  font-weight: 900;
+  color: rgba(255,255,255,0.95);
+}
+
+.anaBadge{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: 900;
+  font-size: 13px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
+}
+
+.anaBadge.gold{    color: rgba(251,191,36,0.95); }
+.anaBadge.silver{  color: rgba(203,213,225,0.95); }
+.anaBadge.bronze{  color: rgba(251,146,60,0.95); }
+.anaBadge.starter{ color: rgba(148,163,184,0.95); }
+
+.cycleGrid{
+  display:grid;
+  gap:10px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+@media (max-width: 980px){
+  .cycleGrid{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.cycleStep{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.05);
+  color:#fff;
+  border-radius:14px;
+  padding:10px 12px;
+  cursor:pointer;
+  text-align:left;
+}
+
+.cycleStep:hover{
+  border-color: rgba(59,130,246,.45);
+  background: rgba(59,130,246,.12);
+}
+
+.cycleIdx{
+  width:24px;
+  height:24px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  background: rgba(255,255,255,.12);
+  font-size:12px;
+  font-weight:800;
+}
+
+.cycleTxt{
+  font-size:13px;
+  font-weight:700;
+  color: rgba(255,255,255,.92);
+}
+
+.dbBtnPrimary{
+  border: 1px solid rgba(34,197,94,.35);
+  background: linear-gradient(90deg, rgba(34,197,94,.35), rgba(59,130,246,.35));
+  color: #fff;
+  font-weight: 900;
+  border-radius: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
 }

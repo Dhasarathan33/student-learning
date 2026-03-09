@@ -3,19 +3,14 @@ import api from "../api/axios";
 import Layout from "../components/Layout";
 
 export default function Progress() {
-  const [tasks, setTasks] = useState([]);
-  const [subjects, setSubjects] = useState([]);
+  const [summary, setSummary] = useState(null);
   const [msg, setMsg] = useState("");
 
   const load = async () => {
     try {
       setMsg("");
-      const [tRes, sRes] = await Promise.all([
-        api.get("/api/tasks/all"),      // ✅ we will add this backend route (Step 4)
-        api.get("/api/subjects"),
-      ]);
-      setTasks(tRes.data || []);
-      setSubjects(sRes.data || []);
+      const res = await api.get("/api/progress/summary");
+      setSummary(res.data || null);
     } catch (err) {
       setMsg(err.response?.data?.message || "Failed to load progress");
     }
@@ -25,85 +20,43 @@ export default function Progress() {
     load();
   }, []);
 
-  const subjectNameById = useMemo(() => {
-    const map = {};
-    subjects.forEach((s) => (map[s.id] = s.name));
-    return map;
-  }, [subjects]);
-
-  const summary = useMemo(() => {
-    const total = tasks.length;
-    const completed = tasks.filter((t) => !!t.is_done).length;
-    const pending = total - completed;
-    const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
-
-    // group by subject
-    const bySubject = {};
-    tasks.forEach((t) => {
-      const sid = t.subject_id || "none";
-      if (!bySubject[sid]) bySubject[sid] = { total: 0, completed: 0 };
-      bySubject[sid].total += 1;
-      if (t.is_done) bySubject[sid].completed += 1;
-    });
-
-    const subjectRows = Object.entries(bySubject).map(([sid, v]) => {
-      const name =
-        sid === "none" ? "No subject" : subjectNameById[Number(sid)] || `Subject #${sid}`;
-      const p = v.total === 0 ? 0 : Math.round((v.completed / v.total) * 100);
-      return { id: sid, name, ...v, percent: p };
-    });
-
-    // sort highest progress first
-    subjectRows.sort((a, b) => b.percent - a.percent);
-
-    return { total, completed, pending, percent, subjectRows };
-  }, [tasks, subjectNameById]);
+  const rows = useMemo(() => summary?.bySubject || [], [summary]);
 
   return (
     <Layout>
       <div style={{ maxWidth: 980, margin: "0 auto", padding: 16 }}>
         <h2 style={{ marginBottom: 6 }}>Progress</h2>
         <div style={{ color: "rgba(255,255,255,0.65)", marginBottom: 14 }}>
-          Completed tasks and subject-wise improvement (simple bars).
+          Subject-wise improvement from task completion + gap score change.
         </div>
 
         {msg && <div style={{ color: "salmon", marginBottom: 12 }}>{msg}</div>}
 
-        {/* Top summary cards */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 12, marginBottom: 16 }}>
-          <StatCard label="Overall" value={`${summary.percent}%`} />
-          <StatCard label="Total Tasks" value={summary.total} />
-          <StatCard label="Completed" value={summary.completed} />
-          <StatCard label="Pending" value={summary.pending} />
+          <StatCard label="Overall" value={`${summary?.overallPercent || 0}%`} />
+          <StatCard label="Total Tasks" value={summary?.total || 0} />
+          <StatCard label="Completed" value={summary?.completed || 0} />
+          <StatCard label="Pending" value={summary?.pending || 0} />
         </div>
 
-        {/* Overall bar */}
         <Card>
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-            <div style={{ fontWeight: 700 }}>Overall Progress</div>
-            <div style={{ opacity: 0.8 }}>{summary.percent}%</div>
-          </div>
-
-          <Bar percent={summary.percent} />
-        </Card>
-
-        {/* Subject bars */}
-        <Card style={{ marginTop: 14 }}>
-          <div style={{ fontWeight: 700, marginBottom: 10 }}>Progress by Subject</div>
-
-          {summary.subjectRows.length === 0 ? (
-            <div style={{ opacity: 0.75 }}>No tasks found. Add tasks to see progress.</div>
+          <div style={{ fontWeight: 800, marginBottom: 10 }}>By Subject</div>
+          {rows.length === 0 ? (
+            <div style={{ opacity: 0.75 }}>No progress data yet.</div>
           ) : (
             <div style={{ display: "grid", gap: 10 }}>
-              {summary.subjectRows.map((r) => (
-                <div key={r.id} style={{ padding: 10, borderRadius: 12, border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.03)" }}>
+              {rows.map((r) => (
+                <div key={r.subject_id} style={{ padding: 10, borderRadius: 12, border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.03)" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
-                    <div style={{ fontWeight: 700 }}>{r.name}</div>
-                    <div style={{ opacity: 0.8 }}>
+                    <div style={{ fontWeight: 700 }}>{r.subject_name}</div>
+                    <div style={{ opacity: 0.85 }}>
                       {r.completed}/{r.total} ({r.percent}%)
                     </div>
                   </div>
-
+                  <div style={{ marginTop: 6, opacity: 0.8, fontSize: 12 }}>
+                    Gap score: {r.current_gap_score} - Change: {r.gap_score_change >= 0 ? "+" : ""}
+                    {r.gap_score_change}
+                  </div>
                   <div style={{ marginTop: 8 }}>
                     <Bar percent={r.percent} />
                   </div>
@@ -112,6 +65,7 @@ export default function Progress() {
             </div>
           )}
         </Card>
+
       </div>
     </Layout>
   );

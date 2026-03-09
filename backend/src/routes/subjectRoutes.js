@@ -1,6 +1,7 @@
 import express from "express";
 import { pool } from "../config/db.js";
 import { requireAuth } from "../middleware/authMiddleware.js";
+import { ensureNonEmpty, isPositiveInt } from "../middleware/validation.js";
 
 const router = express.Router();
 
@@ -8,7 +9,7 @@ const router = express.Router();
 router.post("/", requireAuth, async (req, res) => {
   try {
     const userId = req.user.id;
-    const { name } = req.body;
+    const name = ensureNonEmpty(req.body?.name, "Subject name");
 
     const [result] = await pool.query(
       "INSERT INTO subjects (user_id, name, status) VALUES (?, ?, 'recovery')",
@@ -18,7 +19,7 @@ router.post("/", requireAuth, async (req, res) => {
     res.status(201).json({ id: result.insertId, name, status: "recovery" });
   } catch (err) {
     console.error("SUBJECT ADD ERROR:", err);
-    res.status(500).json({ message: "Server error", error: err.message });
+    res.status(err.statusCode || 500).json({ message: err.message || "Server error" });
   }
 });
 
@@ -44,6 +45,9 @@ router.delete("/:id", requireAuth, async (req, res) => {
   try {
     const userId = req.user.id;
     const { id } = req.params;
+    if (!isPositiveInt(id)) {
+      return res.status(400).json({ message: "Invalid subject id" });
+    }
 
     await pool.query(
       "DELETE FROM subjects WHERE id = ? AND user_id = ?",
@@ -62,21 +66,20 @@ router.put("/:id", requireAuth, async (req, res) => {
   try {
     const userId = req.user.id;
     const { id } = req.params;
-    const { name } = req.body;
-
-    if (!name || !name.trim()) {
-      return res.status(400).json({ message: "Subject name is required" });
+    const name = ensureNonEmpty(req.body?.name, "Subject name");
+    if (!isPositiveInt(id)) {
+      return res.status(400).json({ message: "Invalid subject id" });
     }
 
     await pool.query(
       "UPDATE subjects SET name = ? WHERE id = ? AND user_id = ?",
-      [name.trim(), id, userId]
+      [name, id, userId]
     );
 
     res.json({ message: "Updated successfully" });
   } catch (err) {
     console.error("SUBJECT UPDATE ERROR:", err);
-    res.status(500).json({ message: "Server error", error: err.message });
+    res.status(err.statusCode || 500).json({ message: err.message || "Server error" });
   }
 });
 

@@ -1,12 +1,18 @@
 import express from "express";
 import { pool } from "../config/db.js";
 import { requireAuth } from "../middleware/authMiddleware.js";
+import {
+  ensureWorkflowSchema,
+  generatePlansAndTasksFromWeak,
+  reconcileActivePlansWithCurrentGaps,
+} from "../services/workflowService.js";
 
 const router = express.Router();
 
 // CREATE plan
 router.post("/", requireAuth, async (req, res) => {
   try {
+    await ensureWorkflowSchema();
     const userId = req.user.id;
     const { subject_id, topic, target_date, daily_minutes, priority } = req.body;
 
@@ -40,21 +46,59 @@ router.post("/", requireAuth, async (req, res) => {
   }
 });
 
+// Generate plan from gaps + auto create tasks
+router.post("/generate", requireAuth, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const out = await generatePlansAndTasksFromWeak(userId);
+
+    res.json({
+      message: out.message,
+      plans: out.plans,
+      tasks_created: out.tasks_created,
+      tasks_reused: out.tasks_reused,
+      next_step: "Go to Tasks and start with Pending items.",
+    });
+  } catch (err) {
+    console.error("RECOVERY PLAN GENERATE ERROR:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+});
+
 // LIST plans
 router.get("/", requireAuth, async (req, res) => {
   try {
+    await ensureWorkflowSchema();
     const userId = req.user.id;
+    await reconcileActivePlansWithCurrentGaps(userId);
 
     const [rows] = await pool.query(
-      `SELECT p.*, s.name AS subject_name
+      `SELECT p.*, s.name AS subject_name,
+              COALESCE(pt.topics, '') AS topics_csv
        FROM recovery_plans p
        JOIN subjects s ON s.id = p.subject_id
+       LEFT JOIN (
+         SELECT plan_id, GROUP_CONCAT(topic ORDER BY
+           CASE WHEN LOWER(level)='weak' THEN 1 WHEN LOWER(level)='average' THEN 2 ELSE 3 END,
+           score ASC, topic ASC SEPARATOR '||') AS topics
+         FROM plan_topics
+         GROUP BY plan_id
+       ) pt ON pt.plan_id = p.id
        WHERE p.user_id = ?
+         AND p.status = 'Active'
        ORDER BY p.id DESC`,
       [userId]
     );
 
-    res.json(rows);
+    res.json(
+      rows.map((r) => ({
+        ...r,
+        topics: String(r.topics_csv || "")
+          .split("||")
+          .map((x) => x.trim())
+          .filter(Boolean),
+      }))
+    );
   } catch (err) {
     console.error("RECOVERY PLAN LIST ERROR:", err);
     res.status(500).json({ message: "Server error", error: err.message });
@@ -64,6 +108,7 @@ router.get("/", requireAuth, async (req, res) => {
 // TOGGLE status Active/Completed
 router.put("/:id/status", requireAuth, async (req, res) => {
   try {
+    await ensureWorkflowSchema();
     const userId = req.user.id;
     const { id } = req.params;
     const { status } = req.body;

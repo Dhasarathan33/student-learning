@@ -1,196 +1,122 @@
 import { useEffect, useMemo, useState } from "react";
 import api from "../api/axios";
 import Layout from "../components/Layout";
+import "./recoveryplans.css";
+
+const normalize = (v) => String(v || "").trim().toLowerCase();
 
 export default function RecoveryPlans() {
   const [subjects, setSubjects] = useState([]);
+  const [tasks, setTasks] = useState([]);
   const [plans, setPlans] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const [subjectId, setSubjectId] = useState("");
-  const [topic, setTopic] = useState("");
-  const [targetDate, setTargetDate] = useState(() => new Date().toISOString().slice(0, 10));
-  const [dailyMinutes, setDailyMinutes] = useState(30);
-  const [priority, setPriority] = useState("Medium");
-  const [msg, setMsg] = useState("");
+  const load = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const [subRes, taskRes, planRes] = await Promise.all([
+        api.get("/api/subjects"),
+        api.get("/api/tasks").catch(() => api.get("/api/tasks/today")),
+        api.get("/api/recovery-plans").catch(() => ({ data: [] })),
+      ]);
 
-  const loadSubjects = async () => {
-    const res = await api.get("/api/subjects");
-    setSubjects(res.data);
-  };
-
-  const loadPlans = async () => {
-    const res = await api.get("/api/recovery-plans");
-    setPlans(res.data);
+      setSubjects(subRes.data || []);
+      setTasks(taskRes.data || []);
+      setPlans(planRes.data || []);
+    } catch (e) {
+      setError(e?.response?.data?.message || "Failed to load recovery plans");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    loadSubjects();
-    loadPlans();
+    load();
   }, []);
 
-  const add = async () => {
-    setMsg("");
-    if (!subjectId) return setMsg("Select a subject");
-    if (!topic.trim()) return setMsg("Enter a topic");
-    if (!targetDate) return setMsg("Choose target date");
-
-    await api.post("/api/recovery-plans", {
-      subject_id: Number(subjectId),
-      topic,
-      target_date: targetDate,
-      daily_minutes: Number(dailyMinutes),
-      priority,
+  const subjectNameById = useMemo(() => {
+    const map = {};
+    (subjects || []).forEach((s) => {
+      map[s.id] = s.name;
     });
+    return map;
+  }, [subjects]);
 
-    setTopic("");
-    setDailyMinutes(30);
-    setPriority("Medium");
-    setMsg("Plan created");
-    loadPlans();
-  };
-
-  const toggleStatus = async (p) => {
-    const next = p.status === "Active" ? "Completed" : "Active";
-    await api.put(`/api/recovery-plans/${p.id}/status`, { status: next });
-    loadPlans();
-  };
-
-  const remove = async (id) => {
-    await api.delete(`/api/recovery-plans/${id}`);
-    loadPlans();
-  };
-
-  const counts = useMemo(() => {
-    const active = plans.filter(p => p.status === "Active").length;
-    const completed = plans.length - active;
-    return { active, completed, total: plans.length };
-  }, [plans]);
+  const progress = useMemo(() => {
+    const total = Number((tasks || []).length || 0);
+    const completed = Number((tasks || []).filter((t) => t.is_done || normalize(t.status) === "done").length || 0);
+    const pct = total === 0 ? 0 : Math.round((completed / total) * 100);
+    return { total, completed, pct };
+  }, [tasks]);
 
   return (
     <Layout>
-      <div className="page">
-        <div className="pageHeader">
-          <h1 className="pageTitle">Recovery Plan Builder</h1>
-          <p className="pageSubtitle">
-            Create a plan: subject {"->"} topic {"->"} target date {"->"} daily minutes {"->"} priority
-          </p>
-        </div>
-
-        {msg && (
-          <div className={`alert ${msg.startsWith("Plan created") ? "alertSuccess" : "alertError"}`}>
-            {msg}
+      <div className="rpPage">
+        <div className="rpHeader">
+          <div>
+            <h1 className="rpTitle">Recovery Plans</h1>
+            <p className="rpSubtitle">Auto-generated from assessment weak topics.</p>
           </div>
-        )}
-
-        <div className="panel">
-          <div className="formRow">
-            <select
-              value={subjectId}
-              onChange={(e) => setSubjectId(e.target.value)}
-              className="selectInput"
-            >
-              <option value="">Select Subject</option>
-              {subjects.map((s) => (
-                <option key={s.id} value={s.id}>{s.name}</option>
-              ))}
-            </select>
-
-            <input
-              value={topic}
-              onChange={(e) => setTopic(e.target.value)}
-              placeholder="Topic (eg: Fractions)"
-              className="textInput"
-            />
-
-            <input
-              type="date"
-              value={targetDate}
-              onChange={(e) => setTargetDate(e.target.value)}
-              className="dateInput"
-            />
-
-            <input
-              type="number"
-              value={dailyMinutes}
-              onChange={(e) => setDailyMinutes(e.target.value)}
-              min={5}
-              max={300}
-              className="numberInput"
-              placeholder="Minutes"
-            />
-
-            <select
-              value={priority}
-              onChange={(e) => setPriority(e.target.value)}
-              className="selectInput"
-            >
-              <option value="High">High</option>
-              <option value="Medium">Medium</option>
-              <option value="Low">Low</option>
-            </select>
-
-            <button onClick={add} className="btnPrimary">
-              Create Plan
-            </button>
+          <div className="rpHeaderRight">
+            <ProgressRing percent={progress.pct} />
           </div>
         </div>
 
-        <div className="chips">
-          <span className="chip">Total: <b>{counts.total}</b></span>
-          <span className="chip">Active: <b>{counts.active}</b></span>
-          <span className="chip">Completed: <b>{counts.completed}</b></span>
-        </div>
+        {error && <div className="rpAlert rpErr">{error}</div>}
 
-        <div className="filterRow">
-          <h3 className="pageTitle" style={{ fontSize: 18, margin: 0 }}>Your Plans</h3>
-          <span className="countText">{plans.length} plan(s)</span>
-        </div>
-
-        {plans.length === 0 ? (
-          <div className="emptyState">
-            No plans created yet.
+        <div className="rpPanel">
+          <div className="rpPanelHeader">
+            <div>
+              <div className="rpPanelTitle">Active Plans</div>
+              <div className="rpHint">Plans are created automatically from assessment results.</div>
+            </div>
           </div>
-        ) : (
-          <div className="list">
-            {plans.map((p) => {
-              const statusClass = p.status === "Completed"
-                ? "badgeSuccess"
-                : "badgeInfo";
 
-              const priorityLower = String(p.priority || "").toLowerCase();
-              const priorityClass =
-                priorityLower === "high"
-                  ? "badgeWarn"
-                  : priorityLower === "low"
-                    ? "badgeInfo"
-                    : "badgeWarn";
-
-              return (
-                <div key={p.id} className="planCard">
-                  <div className="planHeader">{p.subject_name}</div>
-                  <div className="planSub">{p.topic}</div>
-                  <div className="planMeta">
-                    <div>Target date: <b>{String(p.target_date).slice(0, 10)}</b></div>
-                    <div>Daily time: <b>{p.daily_minutes} min</b></div>
-                    <div>Priority: <span className={`badge ${priorityClass}`}>{p.priority}</span></div>
-                  </div>
-                  <div className="planMeta">
-                    <span className={`badge ${statusClass}`}>{p.status}</span>
-                  </div>
-                  <div className="planActions">
-                    <button onClick={() => toggleStatus(p)} className="btnGhost">
-                      {p.status === "Active" ? "Mark Completed" : "Mark Active"}
-                    </button>
-                    <button onClick={() => remove(p.id)} className="btnDangerAlt">
-                      Delete
-                    </button>
+          {plans.length === 0 ? (
+            <div className="rpEmpty">{loading ? "Loading..." : "No active plans found."}</div>
+          ) : (
+            <div className="rpTimeline">
+              {plans.map((p) => (
+                <div key={p.id} className="rpStep">
+                  <div className="rpStepBody">
+                    <div className="rpStepTop">
+                      <div className="rpStepDate">
+                        {subjectNameById[p.subject_id] || `Subject #${p.subject_id}`} - {p.priority}
+                      </div>
+                      <span className={`rpChip ${normalize(p.status) === "active" ? "primary" : "muted"}`}>{p.status}</span>
+                    </div>
+                    <div className="rpStepMain">Topics: {(p.topics || []).join(", ") || p.topic || "-"}</div>
+                    <div className="rpHint">Target Date: {String(p.target_date || "").slice(0, 10)}</div>
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </Layout>
+  );
+}
+
+function ProgressRing({ percent }) {
+  const r = 34;
+  const c = 2 * Math.PI * r;
+  const dash = (c * Math.max(0, Math.min(100, percent))) / 100;
+
+  return (
+    <div className="rpRingWrap" title={`Progress: ${percent}%`}>
+      <svg width="84" height="84" viewBox="0 0 84 84" className="rpRing">
+        <g transform="translate(42 42) rotate(-90)">
+          <circle r={r} cx="0" cy="0" className="rpRingTrack" />
+          <circle r={r} cx="0" cy="0" className="rpRingProg" style={{ strokeDasharray: `${dash} ${c - dash}` }} />
+        </g>
+        <text x="42" y="46" textAnchor="middle" className="rpRingText">
+          {percent}%
+        </text>
+      </svg>
+      <div className="rpRingLabel">Progress</div>
+    </div>
   );
 }

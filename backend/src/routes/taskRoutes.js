@@ -4,6 +4,10 @@ import { requireAuth } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
+const isUnknownColumnError = (err, columnName) =>
+  err?.code === "ER_BAD_FIELD_ERROR" ||
+  String(err?.message || "").includes(`Unknown column '${columnName}'`);
+
 // Add task
 router.post("/", requireAuth, async (req, res) => {
   try {
@@ -35,6 +39,22 @@ router.get("/today", requireAuth, async (req, res) => {
     res.json(rows);
   } catch (err) {
     console.error("TASK TODAY ERROR:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+});
+
+// List all tasks (used by tasks board)
+router.get("/", requireAuth, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const [rows] = await pool.query(
+      "SELECT * FROM tasks WHERE user_id = ? ORDER BY id DESC",
+      [userId]
+    );
+
+    res.json(rows);
+  } catch (err) {
+    console.error("TASK LIST ERROR:", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 });
@@ -83,10 +103,20 @@ router.put("/:id/done", requireAuth, async (req, res) => {
     const { id } = req.params;
     const { is_done } = req.body;
 
-    await pool.query(
-      "UPDATE tasks SET is_done = ? WHERE id = ? AND user_id = ?",
-      [is_done ? 1 : 0, id, userId]
-    );
+    const done = is_done ? 1 : 0;
+
+    try {
+      await pool.query(
+        "UPDATE tasks SET is_done = ?, status = ? WHERE id = ? AND user_id = ?",
+        [done, done ? "Done" : "Pending", id, userId]
+      );
+    } catch (err) {
+      if (!isUnknownColumnError(err, "status")) throw err;
+      await pool.query(
+        "UPDATE tasks SET is_done = ? WHERE id = ? AND user_id = ?",
+        [done, id, userId]
+      );
+    }
 
     res.json({ message: "Updated" });
   } catch (err) {
@@ -100,12 +130,48 @@ router.put("/:id", requireAuth, async (req, res) => {
   try {
     const userId = req.user.id;
     const { id } = req.params;
-    const { title, task_date, subject_id } = req.body;
+    const { title, task_date, subject_id, status, is_done } = req.body;
 
-    await pool.query(
-      "UPDATE tasks SET title = ?, task_date = ?, subject_id = ? WHERE id = ? AND user_id = ?",
-      [title, task_date, subject_id || null, id, userId]
-    );
+    if (title !== undefined || task_date !== undefined || subject_id !== undefined) {
+      await pool.query(
+        "UPDATE tasks SET title = COALESCE(?, title), task_date = COALESCE(?, task_date), subject_id = COALESCE(?, subject_id) WHERE id = ? AND user_id = ?",
+        [title ?? null, task_date ?? null, subject_id ?? null, id, userId]
+      );
+    }
+
+    if (status !== undefined || is_done !== undefined) {
+      const done = is_done === undefined ? undefined : is_done ? 1 : 0;
+      const nextStatus = status !== undefined ? String(status) : done === 1 ? "Done" : done === 0 ? "Pending" : undefined;
+
+      if (done !== undefined && nextStatus !== undefined) {
+        try {
+          await pool.query(
+            "UPDATE tasks SET is_done = ?, status = ? WHERE id = ? AND user_id = ?",
+            [done, nextStatus, id, userId]
+          );
+        } catch (err) {
+          if (!isUnknownColumnError(err, "status")) throw err;
+          await pool.query(
+            "UPDATE tasks SET is_done = ? WHERE id = ? AND user_id = ?",
+            [done, id, userId]
+          );
+        }
+      } else if (done !== undefined) {
+        await pool.query(
+          "UPDATE tasks SET is_done = ? WHERE id = ? AND user_id = ?",
+          [done, id, userId]
+        );
+      } else if (nextStatus !== undefined) {
+        try {
+          await pool.query(
+            "UPDATE tasks SET status = ? WHERE id = ? AND user_id = ?",
+            [nextStatus, id, userId]
+          );
+        } catch (err) {
+          if (!isUnknownColumnError(err, "status")) throw err;
+        }
+      }
+    }
 
     res.json({ message: "Updated" });
   } catch (err) {

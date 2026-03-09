@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import api from "../api/axios";
 import Layout from "../components/Layout";
+import "./subject.css";
 
 export default function Subjects() {
   const [name, setName] = useState("");
@@ -75,7 +76,7 @@ export default function Subjects() {
 
   return (
     <Layout>
-      <div className="page">
+      <div className="page subjectsPage">
         <div className="pageHeader">
           <h1 className="pageTitle">Subjects</h1>
           <p className="pageSubtitle">
@@ -134,7 +135,7 @@ export default function Subjects() {
             return (
               <div key={s.id} className="listItem">
                 {/* LEFT */}
-                <div style={{ flex: 1, minWidth: 0 }}>
+                <div className="subjectLeft">
                   {!isEditing ? (
                     <div className="listTitle">{s.name}</div>
                   ) : (
@@ -157,7 +158,7 @@ export default function Subjects() {
                 <span className={`badge ${statusClass}`}>{status}</span>
 
                 {/* RIGHT: actions */}
-                <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                <div className="subjectActions">
                   {!isEditing ? (
                     <>
                       {!isConfirmingDelete ? (

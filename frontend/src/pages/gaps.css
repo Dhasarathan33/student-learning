@@ -1,0 +1,314 @@
+/* gaps.css - Dark glass style matching your app */
+
+.gpPage{
+  max-width:1100px;
+  margin:0 auto;
+  padding:24px;
+}
+
+.gpHeader{ margin-bottom:18px; }
+
+.gpTitle{
+  margin:0;
+  font-size:34px;
+  font-weight:900;
+  color:#fff;
+}
+
+.gpSubtitle{
+  margin:8px 0 0;
+  color:rgba(255,255,255,.65);
+  font-size:14px;
+}
+
+.gpPanel{
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(8, 12, 24, .55);
+  box-shadow: 0 10px 40px rgba(0,0,0,.25);
+  border-radius:18px;
+  padding:16px;
+  backdrop-filter: blur(10px);
+}
+
+.gpGrid2{
+  display:grid;
+  grid-template-columns: 1.1fr .9fr;
+  gap:14px;
+  margin-top:14px;
+}
+
+@media (max-width: 980px){
+  .gpGrid2{ grid-template-columns:1fr; }
+}
+
+.gpFormRow{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+
+.gpInput, .gpSelect{
+  flex:1;
+  min-width:220px;
+  padding:12px 14px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.06);
+  color:#fff;
+  outline:none;
+}
+
+.gpBtn{
+  padding:12px 14px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.06);
+  color:#fff;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.gpBtnPrimary{
+  background: rgba(34,197,94,.14);
+  border-color: rgba(34,197,94,.25);
+}
+
+.gpBtnDanger{
+  background: rgba(239,68,68,.12);
+  border-color: rgba(239,68,68,.22);
+}
+
+.gpHint{
+  margin-top:10px;
+  border:1px solid rgba(245,158,11,.25);
+  background: rgba(245,158,11,.06);
+  border-radius:14px;
+  padding:12px;
+  color: rgba(255,255,255,.85);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.gpBadge{
+  padding:6px 10px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.10);
+  font-size:12px;
+  font-weight:900;
+  white-space:nowrap;
+}
+
+.gpWeak{ background: rgba(239,68,68,.14); border-color: rgba(239,68,68,.25); }
+.gpAvg{  background: rgba(245,158,11,.14); border-color: rgba(245,158,11,.25); }
+.gpGood{ background: rgba(16,185,129,.14); border-color: rgba(16,185,129,.25); }
+
+.gpCards{
+  margin-top:14px;
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap:12px;
+}
+
+@media (max-width: 980px){
+  .gpCards{ grid-template-columns:1fr; }
+}
+
+.gpCard{
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.06);
+  border-radius:14px;
+  padding:12px;
+}
+
+.gpCardTop{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:8px;
+}
+
+.gpCardTitle{
+  font-weight:900;
+  color:#fff;
+}
+
+.gpCardSub{
+  color: rgba(255,255,255,.70);
+  font-size:12px;
+  margin-top:4px;
+}
+
+.gpHeatGrid{
+  margin-top:12px;
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap:12px;
+}
+
+@media (max-width: 980px){
+  .gpHeatGrid{ grid-template-columns:1fr; }
+}
+
+.gpHeatItem{
+  border:1px solid rgba(239,68,68,.18);
+  background: rgba(255,255,255,.05);
+  border-radius:16px;
+  padding:12px;
+}
+
+.gpHeatTop{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.gpSmall{ color: rgba(255,255,255,.65); font-size:12px; }
+
+.gpRadarWrap{
+  margin-top:10px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.04);
+  border-radius:16px;
+  padding:12px;
+}
+
+.gpList{
+  margin-top:14px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.gpRow{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.06);
+  border-radius:14px;
+  padding:12px;
+}
+
+.planWrap{
+  margin-top:12px;
+  display:grid;
+  gap:12px;
+}
+
+.planStatGrid{
+  display:grid;
+  gap:10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 980px){
+  .planStatGrid{
+    grid-template-columns: 1fr;
+  }
+}
+
+.planStat{
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.05);
+  border-radius:14px;
+  padding:12px;
+}
+
+.planStatLabel{
+  color: rgba(255,255,255,.65);
+  font-size:12px;
+  font-weight:700;
+}
+
+.planStatValue{
+  margin-top:6px;
+  color:#fff;
+  font-size:24px;
+  font-weight:900;
+}
+
+.planSectionTitle{
+  color:#fff;
+  font-weight:900;
+  font-size:16px;
+  margin-top:2px;
+}
+
+.planTopicGrid,
+.planTimelineGrid{
+  display:grid;
+  gap:10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 980px){
+  .planTopicGrid,
+  .planTimelineGrid{
+    grid-template-columns: 1fr;
+  }
+}
+
+.planTopicItem,
+.planTimelineItem{
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.05);
+  border-radius:14px;
+  padding:12px;
+}
+
+.planTopicName{
+  color:#fff;
+  font-weight:900;
+  margin-bottom:6px;
+}
+
+.planActions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:6px;
+}
+
+.gpModalBackdrop{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.gpModal{
+  width: min(420px, calc(100vw - 32px));
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(8, 12, 24, .98);
+  border-radius:16px;
+  padding: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.45);
+}
+
+.gpModalTitle{
+  color:#fff;
+  font-weight:900;
+  font-size:18px;
+}
+
+.gpModalSub{
+  margin-top:8px;
+  color: rgba(255,255,255,.7);
+  font-size:13px;
+}
+
+.gpModalActions{
+  margin-top:14px;
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+}
