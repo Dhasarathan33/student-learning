@@ -1,87 +1,51 @@
-Student Learning Recovery Planner: 
-        A full-stack web application that helps students identify learning gaps, plan recovery strategies,
-track study tasks, and manage structured learning notes.
-
-🚀 Tech Stack
-
-    Frontend: React.js
-
-    Backend: Node.js + Express.js
-
-    Database: MySQL
-
-    Authentication: JWT
-
-Database Schema
-
-The application uses the following tables:
-
-    users – Stores user authentication details
-
-    subjects – Subjects added for recovery
-
-    tasks – Daily learning tasks
-
-    learning_gaps – Weak / Average / Good topic tracking
-
-    recovery_plans – Structured recovery strategies
-
-    learning_resources – Notes for learning concepts/ refer for vidoes 
-
-✨ Features
-
-    🔐 Secure login & signup (JWT-based)
-
-    📚 Add and manage subjects
-
-    📝 Create and track daily study tasks
-
-    📊 Learning gap assessment (Weak / Average / Good)
-
-    📈 Progress tracking dashboard
-
-    📒 Structured learning notes (Basic / Medium / Advanced)
-
-⚙️ Setup
-Backend
-    cd backend
-    npm install
-    npm start
-
-Frontend
-    cd frontend
-    npm install
-    npm start
-
-🎯 Purpose
-        This project helps students systematically recover weak topics, improve consistency, 
-and monitor academic progress using a structured planning approach.
-=======
 # Student Learning Recovery Planner
 
-A full-stack web application that helps students detect learning gaps, create recovery plans, track tasks, and monitor progress.
+Student Learning Recovery Planner is a full-stack self-learning support system that helps students identify weak topics through assessments, generate recovery plans, use targeted learning resources, and track improvement through retests and progress analytics.
 
-## Stack
+## Tech Stack
 
 - Frontend: React + Vite
 - Backend: Node.js + Express
 - Database: MySQL
-- Auth: JWT
+- Authentication: JWT
+- External API: YouTube Data API
 - API Docs: Swagger UI + Postman
 - CI/CD: GitHub Actions
-- Hosting target: Vercel (frontend) + Render (backend)
+- Deployment: Vercel (frontend) + Render (backend)
+
+## Self-Learning Workflow
+
+1. Student takes an assessment quiz.
+2. System detects weak topics automatically.
+3. Weak topics are stored in the learning gaps module.
+4. System generates recovery plans.
+5. Student studies using learning resources and YouTube videos.
+6. Student takes a retest.
+7. System updates progress automatically.
+
+## Core Features
+
+- Secure signup/login (JWT)
+- Subject management
+- Task management
+- Learning gap detection (Weak/Average/Good)
+- Recovery plan generation
+- Learning resources + YouTube integration
+- Retest workflow
+- Progress dashboard and analytics
+- Structured learning notes (Basic/Medium/Advanced)
 
 ## Project Structure
 
 - `frontend/`: React client
 - `backend/`: Express API
 - `docs/postman/`: Postman collection
-- `.github/workflows/`: CI/CD pipelines
-- `render.yaml`: Render service configuration
+- `.github/workflows/`: CI/CD workflows
+- `render.yaml`: Render backend deployment config
 
 ## Local Setup
 
-### 1) Backend
+### Backend
 
 ```bash
 cd backend
@@ -90,9 +54,9 @@ npm install
 npm start
 ```
 
-Backend runs on `http://localhost:5000` by default.
+Backend runs at `http://localhost:5000`.
 
-### 2) Frontend
+### Frontend
 
 ```bash
 cd frontend
@@ -101,7 +65,7 @@ npm install
 npm run dev
 ```
 
-Frontend runs on `http://localhost:5173` by default.
+Frontend runs at `http://localhost:5173`.
 
 ## Environment Variables
 
@@ -116,15 +80,16 @@ Frontend runs on `http://localhost:5173` by default.
 - `DB_PORT`
 - `CORS_ORIGIN`
 - `YOUTUBE_API_KEY`
-- `PUBLIC_API_URL` (optional, used by Swagger server URL)
+
 
 ### Frontend (`frontend/.env`)
 
-- `VITE_API_BASE_URL` (example: `https://your-backend.onrender.com`)
+- `VITE_API_BASE_URL`  
+  Example: `https://student-learning-recovery-backend.onrender.com`
 
 ## API Documentation
 
-- Swagger UI: `http://localhost:5000/api/docs`
+- Swagger: `https://student-learning-recovery-backend.onrender.com/api/docs`
 - Postman collection: `docs/postman/Student_Learning_Recovery_Planner.postman_collection.json`
 
 ## Testing
@@ -147,18 +112,18 @@ npm run test
 
 ### Frontend (Vercel)
 
-- Config file: `frontend/vercel.json`
+- Config: `frontend/vercel.json`
 - Build command: `npm run build`
-- Output dir: `dist`
-- Required env var on Vercel: `VITE_API_BASE_URL`
+- Output directory: `dist`
+- Required env var: `VITE_API_BASE_URL`
 
 ### Backend (Render)
 
-- Config file: `render.yaml`
+- Config: `render.yaml`
 - Root directory: `backend`
 - Build command: `npm install`
 - Start command: `npm start`
-- Configure all backend env vars in Render dashboard.
+- Configure backend env vars in Render dashboard.
 
 ## CI/CD
 
@@ -171,16 +136,18 @@ GitHub Actions workflows:
   - Vercel deploy (requires `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`)
   - Render deploy hook trigger (requires `RENDER_DEPLOY_HOOK_URL`)
 
-## Live URLs (fill after deployment)
+## Live URLs
 
-- Frontend URL: `https://<your-vercel-app>.vercel.app`
-- Backend URL: `https://<your-render-service>.onrender.com`
-- Swagger URL: `https://<your-render-service>.onrender.com/api/docs`
+- Frontend: `https://student-learning-recovery-planner.vercel.app`
+- Backend: `https://student-learning-recovery-backend.onrender.com`
+- Swagger: `https://student-learning-recovery-backend.onrender.com/api/docs`
 
-## Viva Notes
+## Purpose
 
-- Code splitting implemented with lazy loaded routes.
-- Unit/integration tests added for frontend and backend.
-- API docs available in Swagger + Postman.
-- Deployment configs and CI/CD pipelines are included.
->>>>>>> 82fcc66 (Fix deploy workflow)
+The platform supports self-directed learning by helping students:
+
+- Identify weak topics
+- Access targeted resources
+- Follow structured recovery plans
+- Retest understanding
+- Monitor progress continuously
