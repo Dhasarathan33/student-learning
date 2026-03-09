@@ -1,18 +1,19 @@
 import axios from "axios";
 
-// Use environment variable if available, otherwise use production backend
-const apiBaseUrl =
+// API base URL
+const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
   "https://student-learning-recovery-backend.onrender.com";
 
+// Create axios instance
 const api = axios.create({
-  baseURL: apiBaseUrl,
+  baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// Attach JWT token automatically
+// Automatically attach JWT token
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -23,7 +24,18 @@ api.interceptors.request.use(
 
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Optional: handle global API errors
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error("API Error:", error.response?.data || error.message);
+    return Promise.reject(error);
+  }
 );
 
 export default api;
